@@ -1,0 +1,31 @@
+{{ define "Edit" }}
+{{ template "Header" }}
+
+<div class="container">
+    <h3>Edit</h3>
+    <p>=* required fields!</p>
+    <form method="post" action="/update">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">ID</label>
+                    <input type="text" class="form-control" name="txtId" readonly value="{{ .ID }}" />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Title *</label>
+                    <input type="text" class="form-control" name="txtTitle" required value="{{ .Title }}" />
+                </div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Note *</label>
+            <textarea class="form-control" name="txtContent" rows="12" required>{{ .Note }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+</div>
+
+{{ template "Footer" }}
+{{ end }}

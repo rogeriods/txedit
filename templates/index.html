@@ -1,0 +1,37 @@
+{{ define "Index" }}
+{{ template "Header" }}
+
+<div class="container">
+    <h3>Note(s)</h3>
+    <table id="example" class="table table-striped table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th class="no-sort"></th>
+                <th class="no-sort"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ range . }}
+            <tr>
+                <th>{{ .ID }}</th>
+                <th>{{ .Title }}</th>
+                <td width="15">
+                    <a href="/edit?id={{ .ID }}">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                </td>
+                <td width="15">
+                    <a href="/delete?id={{ .ID }}" onclick="return confirm('Are you sure you want to delete this note?');" class="text-danger">
+                        <i class="fa fa-minus-circle" aria-hidden="true"></i>
+                    </a>
+                </td>
+            </tr>
+            {{ end }}
+        </tbody>
+    </table>
+</div>
+
+{{ template "Footer" }}
+{{ end }}
