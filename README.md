@@ -14,9 +14,5 @@ go run main.go
 ## Docker Commands
 
 ```bash
-# Create image
-docker build --tag=txedit:1 .
-
-# Running container
-docker run --name=txedit --restart=always -d -p 8080:8080 txedit:1
+docker compose up -d
 ```

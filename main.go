@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 
-	"rogeriods/txedit/controllers"
 	"rogeriods/txedit/routes"
 )
 
@@ -14,9 +13,9 @@ func main() {
 	http.HandleFunc("/", routes.Index)
 	http.HandleFunc("/new", routes.New)
 	http.HandleFunc("/edit", routes.Edit)
-	http.HandleFunc("/insert", controllers.Insert)
-	http.HandleFunc("/update", controllers.Update)
-	http.HandleFunc("/delete", controllers.Delete)
+	http.HandleFunc("/insert", routes.Insert)
+	http.HandleFunc("/update", routes.Update)
+	http.HandleFunc("/delete", routes.Delete)
 
 	http.ListenAndServe(":8080", nil)
 }

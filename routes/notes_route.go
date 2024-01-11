@@ -4,36 +4,17 @@ import (
 	"net/http"
 	"text/template"
 
+	"rogeriods/txedit/controllers"
 	"rogeriods/txedit/models"
-	"rogeriods/txedit/utils"
+
+	"github.com/google/uuid"
 )
 
 var tmpl = template.Must(template.ParseGlob("templates/*"))
 
 func Index(w http.ResponseWriter, r *http.Request) {
-	db := utils.DBConn()
-	selDB, err := db.Query("SELECT * FROM notes")
-	if err != nil {
-		panic(err.Error())
-	}
-
-	note := models.Note{}
-	res := []models.Note{}
-
-	for selDB.Next() {
-		var id, title, content string
-		err := selDB.Scan(&id, &content, &title)
-		if err != nil {
-			panic(err.Error())
-		}
-
-		note.ID = id
-		note.Note = content
-        note.Title = title 
-		res = append(res, note)
-	}
-	tmpl.ExecuteTemplate(w, "Index", res)
-	defer db.Close()
+	notes := controllers.SelectAll()
+	tmpl.ExecuteTemplate(w, "Index", notes)
 }
 
 func New(w http.ResponseWriter, r *http.Request) {
@@ -41,27 +22,41 @@ func New(w http.ResponseWriter, r *http.Request) {
 }
 
 func Edit(w http.ResponseWriter, r *http.Request) {
-	db := utils.DBConn()
 	nId := r.URL.Query().Get("id")
-	selDB, err := db.Query("SELECT * FROM notes WHERE id=?", nId)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	note := models.Note{}
-
-	for selDB.Next() {
-		var id, title, content string
-		err := selDB.Scan(&id, &content, &title)
-		if err != nil {
-			panic(err.Error())
-		}
-
-		note.ID = id
-        note.Title = title 
-		note.Note = content
-	}
-
+	note := controllers.SelectById(nId)
 	tmpl.ExecuteTemplate(w, "Edit", note)
-	defer db.Close()
+}
+
+func Delete(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Query().Get("id")
+	controllers.Delete(id)
+	http.Redirect(w, r, "/", http.StatusMovedPermanently)
+}
+
+// ================= //
+// Form POST actions //
+// ================= //
+
+func Insert(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		note := models.Note{}
+		note.ID = uuid.NewString()
+		note.Title = r.FormValue("txtTitle")
+		note.Note = r.FormValue("txtContent")
+
+		controllers.InsOrUp(note, true)
+	}
+	http.Redirect(w, r, "/", http.StatusMovedPermanently)
+}
+
+func Update(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		note := models.Note{}
+		note.ID = r.FormValue("txtId")
+		note.Title = r.FormValue("txtTitle")
+		note.Note = r.FormValue("txtContent")
+
+		controllers.InsOrUp(note, false)
+	}
+	http.Redirect(w, r, "/", http.StatusMovedPermanently)
 }
